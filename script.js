@@ -28,6 +28,11 @@ function addSite(url) {
   siteUrl.className = 'site-url';
   siteUrl.textContent = url;
 
+  // ✅ Status text
+  const statusText = document.createElement('div');
+  statusText.className = 'status-text';
+  statusText.textContent = 'Checking...';
+
   // 🗑️ Trash can button
   const deleteBtn = document.createElement('button');
   deleteBtn.className = 'delete-btn';
@@ -36,12 +41,14 @@ function addSite(url) {
     sitesGrid.removeChild(card);
   });
 
+  // Add elements to card
   card.appendChild(light);
   card.appendChild(siteUrl);
-  card.appendChild(deleteBtn); // Add delete button to card
+  card.appendChild(statusText);
+  card.appendChild(deleteBtn);
   sitesGrid.appendChild(card);
 
-  checkStatus(url, light);
+  checkStatus(url, light, statusText); // Pass status text
 }
 
 
