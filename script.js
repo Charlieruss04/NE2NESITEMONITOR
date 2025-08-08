@@ -63,9 +63,8 @@ function checkStatus(url, lightEl, statusEl) {
       clearTimeout(timeout);
     });
 }
-const sites = [
-  'http://ne2ne.com'
-]; // store { url, lightEl, statusEl }
+const sites = []; // store { url, lightEl, statusEl }
+
 setInterval(() => {
   sites.forEach(site => {
     // Clear old colors before re-checking
@@ -74,4 +73,14 @@ setInterval(() => {
     checkStatus(site.url, site.lightEl, site.statusEl);
   });
 }, 20000); // 20 seconds
+
+const defaultSites = [
+  'https://google.com',
+  'https://ne2ne.com'
+];
+
+document.addEventListener('DOMContentLoaded', () => {
+  defaultSites.forEach(site => addSite(site));
+});
+
 
