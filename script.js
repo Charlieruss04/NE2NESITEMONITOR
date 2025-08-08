@@ -28,19 +28,22 @@ function addSite(url) {
   siteUrl.className = 'site-url';
   siteUrl.textContent = url;
 
-  const statusText = document.createElement('div');
-  statusText.className = 'status-text';
-  statusText.textContent = 'Checking...';
+  // 🗑️ Trash can button
+  const deleteBtn = document.createElement('button');
+  deleteBtn.className = 'delete-btn';
+  deleteBtn.innerHTML = '🗑️';
+  deleteBtn.addEventListener('click', () => {
+    sitesGrid.removeChild(card);
+  });
 
   card.appendChild(light);
   card.appendChild(siteUrl);
-  card.appendChild(statusText);
+  card.appendChild(deleteBtn); // Add delete button to card
   sitesGrid.appendChild(card);
 
-  sites.push({ url, lightEl: light, statusEl: statusText }); // store
-
-  checkStatus(url, light, statusText);
+  checkStatus(url, light);
 }
+
 
 
 function checkStatus(url, lightEl, statusEl) {
