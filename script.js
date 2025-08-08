@@ -28,7 +28,6 @@ function addSite(url) {
   siteUrl.className = 'site-url';
   siteUrl.textContent = url;
 
-  // NEW: status text
   const statusText = document.createElement('div');
   statusText.className = 'status-text';
   statusText.textContent = 'Checking...';
@@ -38,7 +37,9 @@ function addSite(url) {
   card.appendChild(statusText);
   sitesGrid.appendChild(card);
 
-  checkStatus(url, light, statusText); // pass statusText too
+  sites.push({ url, lightEl: light, statusEl: statusText }); // store
+
+  checkStatus(url, light, statusText);
 }
 
 
@@ -59,3 +60,13 @@ function checkStatus(url, lightEl, statusEl) {
       clearTimeout(timeout);
     });
 }
+const sites = []; // store { url, lightEl, statusEl }
+setInterval(() => {
+  sites.forEach(site => {
+    // Clear old colors before re-checking
+    site.lightEl.classList.remove('green', 'red');
+    site.statusEl.textContent = 'Checking...';
+    checkStatus(site.url, site.lightEl, site.statusEl);
+  });
+}, 20000); // 20 seconds
+
