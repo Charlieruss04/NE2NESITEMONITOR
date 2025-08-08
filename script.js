@@ -27,9 +27,18 @@ function addSite(url) {
   const siteUrl = document.createElement('div');
   siteUrl.className = 'site-url';
   siteUrl.textContent = url;
-  
+
+  // 🗑️ Trash can button
+  const deleteBtn = document.createElement('button');
+  deleteBtn.className = 'delete-btn';
+  deleteBtn.innerHTML = '🗑️';
+  deleteBtn.addEventListener('click', () => {
+    sitesGrid.removeChild(card);
+  });
+
   card.appendChild(light);
   card.appendChild(siteUrl);
+  card.appendChild(deleteBtn); // Add delete button to card
   sitesGrid.appendChild(card);
 
   checkStatus(url, light);
