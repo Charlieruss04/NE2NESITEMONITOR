@@ -27,24 +27,33 @@ function addSite(url) {
   const siteUrl = document.createElement('div');
   siteUrl.className = 'site-url';
   siteUrl.textContent = url;
-  
+
+  // NEW: status text
+  const statusText = document.createElement('div');
+  statusText.className = 'status-text';
+  statusText.textContent = 'Checking...';
+
   card.appendChild(light);
   card.appendChild(siteUrl);
+  card.appendChild(statusText);
   sitesGrid.appendChild(card);
 
-  checkStatus(url, light);
+  checkStatus(url, light, statusText); // pass statusText too
 }
 
-function checkStatus(url, lightEl) {
+
+function checkStatus(url, lightEl, statusEl) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 5000);
 
   fetch(url, { method: 'HEAD', mode: 'no-cors', signal: controller.signal })
     .then(() => {
       lightEl.classList.add('green');
+      statusEl.textContent = 'Online';
     })
     .catch(() => {
       lightEl.classList.add('red');
+      statusEl.textContent = 'Offline';
     })
     .finally(() => {
       clearTimeout(timeout);
