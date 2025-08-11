@@ -28,28 +28,33 @@ function addSite(url) {
   siteUrl.className = 'site-url';
   siteUrl.textContent = url;
 
-  // ✅ Status text
   const statusText = document.createElement('div');
   statusText.className = 'status-text';
   statusText.textContent = 'Checking...';
 
-  // 🗑️ Trash can button
   const deleteBtn = document.createElement('button');
   deleteBtn.className = 'delete-btn';
   deleteBtn.innerHTML = '🗑️';
   deleteBtn.addEventListener('click', () => {
     sitesGrid.removeChild(card);
+    // Remove from sites array as well
+    const index = sites.findIndex(s => s.url === url);
+    if (index > -1) sites.splice(index, 1);
   });
 
-  // Add elements to card
   card.appendChild(light);
   card.appendChild(siteUrl);
   card.appendChild(statusText);
   card.appendChild(deleteBtn);
   sitesGrid.appendChild(card);
 
-  checkStatus(url, light, statusText); // Pass status text
+  // Add to sites array for periodic refresh
+  sites.push({ url, lightEl: light, statusEl: statusText });
+
+  // First check
+  checkStatus(url, light, statusText);
 }
+
 
 
 
