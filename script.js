@@ -17,7 +17,7 @@ addBtn.addEventListener('click', () => {
 urlInput.addEventListener('keydown', (event) => {
   if (event.key === 'Enter') {
     const url = urlInput.value.trim();
-    if (!url) return; // ignore empty
+    if (!url) return;
     event.preventDefault();
     addBtn.click();
   }
@@ -120,15 +120,19 @@ function drawChart(history) {
         backgroundColor: 'rgba(40,167,69,0.2)',
         stepped: true,
         fill: true,
-        pointRadius: 0 // no dots on line
+        pointRadius: 0
       }]
     },
     options: {
       animation: false,
       responsive: true,
       scales: {
+        x: {
+          ticks: { color: 'black' }
+        },
         y: {
           ticks: {
+            color: 'black',
             callback: (value) => value === 1 ? 'Online' : 'Offline'
           },
           min: 0,
