@@ -39,7 +39,7 @@ function addSite(url) {
   siteUrl.href = url;
   siteUrl.target = '_blank';
   siteUrl.rel = 'noopener noreferrer';
-  siteUrl.textContent = new URL(url).hostname; // display only domain
+  siteUrl.textContent = url;
 
   const statusText = document.createElement('div');
   statusText.className = 'status-text';
@@ -101,7 +101,5 @@ const defaultSites = [
 ];
 
 document.addEventListener('DOMContentLoaded', () => {
-  defaultSites.forEach(site => addSite(site));
-});
   defaultSites.forEach(site => addSite(site));
 });
