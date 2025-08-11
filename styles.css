@@ -119,10 +119,10 @@ button:hover {
   color: white;
 }
 
-/* Updated chart styling to match clean look */
+/* Clean, thin line chart style */
 #statusChart {
   background: white;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-  height: 300px; /* taller for better visibility */
+  height: 300px;
 }

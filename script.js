@@ -112,21 +112,13 @@ function drawChart(history) {
       datasets: [{
         label: 'Uptime',
         data,
-        fill: true,
-        tension: 0.3, // smooth curves
-        borderWidth: 2,
+        fill: false, // no shaded area
+        tension: 0, // straight lines
+        borderWidth: 2, // thin line
         pointRadius: 0,
-        borderColor: '#28a745',
-        backgroundColor: data.map(v => 
-          v === 1 
-            ? 'rgba(40,167,69,0.15)' 
-            : 'rgba(220,53,69,0.15)'
-        ),
+        borderColor: ctx => ctx.p1.parsed.y === 1 ? '#28a745' : '#dc3545',
         segment: {
-          borderColor: ctx => ctx.p1.parsed.y === 1 ? '#28a745' : '#dc3545',
-          backgroundColor: ctx => ctx.p1.parsed.y === 1 
-            ? 'rgba(40,167,69,0.15)' 
-            : 'rgba(220,53,69,0.15)'
+          borderColor: ctx => ctx.p1.parsed.y === 1 ? '#28a745' : '#dc3545'
         }
       }]
     },
