@@ -1,0 +1,23 @@
+{
+  "name": "ne2nesitemonitor",
+  "version": "1.0.0",
+  "description": "",
+  "main": "script.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Charlieruss04/NE2NESITEMONITOR.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Charlieruss04/NE2NESITEMONITOR/issues"
+  },
+  "homepage": "https://github.com/Charlieruss04/NE2NESITEMONITOR#readme",
+  "devDependencies": {
+    "cypress": "^14.5.4"
+  }
+}
