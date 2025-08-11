@@ -4,7 +4,7 @@ body {
   margin: 0;
   padding: 0;
   color: white;
-  font-size: 18px; /* Increased base size */
+  font-size: 18px;
 }
 
 .container {
@@ -78,6 +78,15 @@ button:hover {
   word-break: break-all;
   text-align: left;
   font-size: 1.1em;
+}
+
+.site-url a {
+  color: #2563EB;
+  text-decoration: none;
+}
+
+.site-url a:hover {
+  text-decoration: underline;
 }
 
 .status-text {
