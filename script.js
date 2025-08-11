@@ -105,58 +105,33 @@ function drawChart(history) {
 
   if (chart) chart.destroy();
 
+  // Option 2 - Bar Segments (Timeline)
   chart = new Chart(ctx, {
-    type: 'line',
+    type: 'bar',
     data: {
       labels,
       datasets: [{
         data,
-        stepped: true,
-        fill: true,
-        borderWidth: 2,
-        pointRadius: 0,
-        segment: {
-          borderColor: ctx => ctx.p1.parsed.y === 1 ? '#28a745' : '#dc3545',
-          backgroundColor: ctx => ctx.p1.parsed.y === 1
-            ? 'rgba(40,167,69,0.2)'
-            : 'rgba(220,53,69,0.2)'
-        }
+        backgroundColor: data.map(v => v === 1 ? '#28a745' : '#dc3545'),
+        borderWidth: 0
       }]
     },
     options: {
       animation: false,
       responsive: true,
       scales: {
-        x: {
-          ticks: {
-            color: 'black',
-            autoSkip: false,
-            maxRotation: 0,
-            callback: function(val, index) {
-              // Show every 5 minutes
-              const label = labels[index];
-              if (!label) return '';
-              const minutes = parseInt(label.split(':')[1]);
-              return minutes % 5 === 0 ? label : '';
-            }
-          }
+        x: { 
+          grid: { display: false }, 
+          ticks: { color: 'black', maxRotation: 0 } 
         },
-        y: {
-          ticks: {
-            color: 'black',
-            stepSize: 1,
-            callback: value => value === 1 ? 'Online' : 'Offline'
-          },
-          min: 0,
-          max: 1
-        }
+        y: { display: false }
       },
-      plugins: {
+      plugins: { 
         legend: { display: false },
         tooltip: {
           callbacks: {
             label: function(context) {
-              const status = context.parsed.y === 1 ? 'Online' : 'Offline';
+              const status = context.raw === 1 ? 'Online' : 'Offline';
               const time = history[context.dataIndex].time;
               return `${status} — ${new Date(time).toLocaleString()}`;
             }

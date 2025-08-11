@@ -119,9 +119,10 @@ button:hover {
   color: white;
 }
 
+/* Updated chart styling for bar timeline */
 #statusChart {
-  background: white;
+  background: #f8f9fa; /* lighter neutral for contrast */
   border-radius: 8px;
-  padding: 10px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  height: 250px; /* taller for better bar visibility */
 }
