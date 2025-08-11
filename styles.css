@@ -4,48 +4,50 @@ body {
   margin: 0;
   padding: 0;
   color: white;
+  font-size: 18px; /* Increased base font size */
 }
 
 .container {
-  max-width: 800px;
+  max-width: 900px; /* slightly wider */
   margin: auto;
-  padding: 20px;
+  padding: 30px; /* more padding */
   text-align: center;
 }
 
 .logo {
-  max-width: 250px;
+  max-width: 300px; /* bigger logo */
   height: auto;
 }
 
 .subtitle {
-  font-size: 1.8rem;
+  font-size: 2rem; /* was 1.8rem */
   font-weight: 400;
   color: white;
-  margin-top: 5px;
+  margin-top: 8px;
 }
 
 .input-area {
   display: flex;
   justify-content: center;
-  gap: 10px;
-  margin: 20px 0;
+  gap: 15px; /* bigger gap */
+  margin: 25px 0;
 }
 
 input {
-  padding: 10px;
-  font-size: 16px;
-  width: 300px;
-  border-radius: 5px;
+  padding: 14px;
+  font-size: 18px; /* bigger text in input */
+  width: 350px; /* slightly wider */
+  border-radius: 6px;
   border: 1px solid #3B82F6; /* lighter blue from logo */
 }
 
 button {
-  padding: 10px 20px;
+  padding: 14px 25px;
+  font-size: 18px; /* bigger button text */
   background-color: #3B82F6; /* lighter blue */
   color: white;
   border: none;
-  border-radius: 5px;
+  border-radius: 6px;
   cursor: pointer;
 }
 
@@ -55,46 +57,40 @@ button:hover {
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 15px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px; /* bigger spacing between cards */
 }
 
 .card {
   background: white;
   color: black;
-  border-radius: 8px;
-  padding: 15px;
+  border-radius: 10px;
+  padding: 20px; /* more padding inside cards */
   display: flex;
   align-items: center;
-  justify-content: space-between; /* space out URL and controls */
-  gap: 10px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  justify-content: space-between;
+  gap: 12px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.25);
 }
 
-/* URL takes up remaining space and is clickable */
 .site-url {
   flex: 1;
   word-break: break-all;
   text-align: left;
-  color: inherit; /* match card text color */
-  text-decoration: none; /* remove underline */
+  font-size: 1.1em; /* slightly larger URL text */
 }
 
-.site-url:hover {
-  text-decoration: underline; /* underline on hover */
-}
-
-/* Status text color set directly in JS */
 .status-text {
   font-weight: bold;
-  min-width: 70px; /* keeps space consistent */
+  min-width: 80px; /* keeps space consistent */
   text-align: right;
+  font-size: 1.1em;
 }
 
 .delete-btn {
   background: none;
   border: none;
-  font-size: 18px;
+  font-size: 22px; /* bigger icon */
   cursor: pointer;
 }
 
