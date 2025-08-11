@@ -105,33 +105,55 @@ function drawChart(history) {
 
   if (chart) chart.destroy();
 
-  // Option 2 - Bar Segments (Timeline)
   chart = new Chart(ctx, {
-    type: 'bar',
+    type: 'line',
     data: {
       labels,
       datasets: [{
+        label: 'Uptime',
         data,
-        backgroundColor: data.map(v => v === 1 ? '#28a745' : '#dc3545'),
-        borderWidth: 0
+        fill: true,
+        tension: 0.3, // smooth curves
+        borderWidth: 2,
+        pointRadius: 0,
+        borderColor: '#28a745',
+        backgroundColor: data.map(v => 
+          v === 1 
+            ? 'rgba(40,167,69,0.15)' 
+            : 'rgba(220,53,69,0.15)'
+        ),
+        segment: {
+          borderColor: ctx => ctx.p1.parsed.y === 1 ? '#28a745' : '#dc3545',
+          backgroundColor: ctx => ctx.p1.parsed.y === 1 
+            ? 'rgba(40,167,69,0.15)' 
+            : 'rgba(220,53,69,0.15)'
+        }
       }]
     },
     options: {
       animation: false,
       responsive: true,
       scales: {
-        x: { 
-          grid: { display: false }, 
-          ticks: { color: 'black', maxRotation: 0 } 
+        x: {
+          grid: { display: false },
+          ticks: { color: 'black', maxRotation: 0 }
         },
-        y: { display: false }
+        y: {
+          ticks: {
+            color: 'black',
+            stepSize: 1,
+            callback: value => value === 1 ? 'Up' : 'Down'
+          },
+          min: 0,
+          max: 1
+        }
       },
-      plugins: { 
+      plugins: {
         legend: { display: false },
         tooltip: {
           callbacks: {
             label: function(context) {
-              const status = context.raw === 1 ? 'Online' : 'Offline';
+              const status = context.parsed.y === 1 ? 'Up' : 'Down';
               const time = history[context.dataIndex].time;
               return `${status} — ${new Date(time).toLocaleString()}`;
             }

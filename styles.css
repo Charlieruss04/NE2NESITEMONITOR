@@ -109,8 +109,8 @@ button:hover {
 
 /* Chart section styling */
 .chart-container {
-  max-width: 800px;
-  margin: 40px auto 20px;
+  max-width: 900px;
+  margin: 50px auto 30px;
   text-align: center;
 }
 
@@ -119,10 +119,10 @@ button:hover {
   color: white;
 }
 
-/* Updated chart styling for bar timeline */
+/* Updated chart styling to match clean look */
 #statusChart {
-  background: #f8f9fa; /* lighter neutral for contrast */
+  background: white;
   border-radius: 8px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-  height: 250px; /* taller for better bar visibility */
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  height: 300px; /* taller for better visibility */
 }
