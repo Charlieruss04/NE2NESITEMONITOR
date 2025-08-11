@@ -4,12 +4,23 @@ const sitesGrid = document.getElementById('sitesGrid');
 
 const sites = []; // store { url, statusEl }
 
+// Add site when clicking button
 addBtn.addEventListener('click', () => {
   const url = urlInput.value.trim();
-  if (!url) return;
+  if (!url) return; // ignore empty input
   const fullUrl = normalizeUrl(url);
   addSite(fullUrl);
   urlInput.value = '';
+});
+
+// Add site when pressing Enter in the input
+urlInput.addEventListener('keydown', (event) => {
+  if (event.key === 'Enter') {
+    const url = urlInput.value.trim();
+    if (!url) return; // ignore empty input
+    event.preventDefault(); // prevent form submission
+    addBtn.click(); // simulate clicking Add Site
+  }
 });
 
 function normalizeUrl(url) {
@@ -22,8 +33,6 @@ function normalizeUrl(url) {
 function addSite(url) {
   const card = document.createElement('div');
   card.className = 'card';
-  
-  // Removed light element
   
   const siteUrl = document.createElement('div');
   siteUrl.className = 'site-url';
@@ -42,6 +51,7 @@ function addSite(url) {
     if (index > -1) sites.splice(index, 1);
   });
 
+  // Append elements to the card
   card.appendChild(siteUrl);
   card.appendChild(statusText);
   card.appendChild(deleteBtn);
@@ -50,7 +60,7 @@ function addSite(url) {
   // Add to sites array for periodic refresh
   sites.push({ url, statusEl: statusText });
 
-  // First check
+  // Initial status check
   checkStatus(url, statusText);
 }
 
@@ -72,14 +82,16 @@ function checkStatus(url, statusEl) {
     });
 }
 
+// Refresh every 20 seconds
 setInterval(() => {
   sites.forEach(site => {
     site.statusEl.textContent = 'Checking...';
     site.statusEl.style.color = '';
     checkStatus(site.url, site.statusEl);
   });
-}, 20000); // 20 seconds
+}, 20000);
 
+// Default sites
 const defaultSites = [
   'https://google.com',
   'https://ne2ne.com'
