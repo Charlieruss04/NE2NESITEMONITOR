@@ -7,7 +7,7 @@ let chart; // Chart.js instance
 // Add site when clicking button
 addBtn.addEventListener('click', () => {
   const url = urlInput.value.trim();
-  if (!url) return; // ignore empty input
+  if (!url) return;
   const fullUrl = normalizeUrl(url);
   addSite(fullUrl);
   urlInput.value = '';
@@ -36,7 +36,8 @@ function addSite(url) {
 
   const siteUrl = document.createElement('div');
   siteUrl.className = 'site-url';
-  siteUrl.textContent = url;
+  // Make site clickable
+  siteUrl.innerHTML = `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`;
 
   const statusText = document.createElement('div');
   statusText.className = 'status-text';
@@ -101,10 +102,12 @@ function updateHistory(url, isOnline) {
   return history;
 }
 
-// Draw the Chart.js timeline
+// Draw Chart.js timeline with green/red segments and tooltips
 function drawChart(history) {
   const ctx = document.getElementById('statusChart').getContext('2d');
-  const labels = history.map(entry => new Date(entry.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+  const labels = history.map(entry =>
+    new Date(entry.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+  );
   const data = history.map(entry => entry.status);
 
   if (chart) chart.destroy();
@@ -116,11 +119,16 @@ function drawChart(history) {
       datasets: [{
         label: 'ne2ne.com Status',
         data,
-        borderColor: '#28a745',
-        backgroundColor: 'rgba(40,167,69,0.2)',
         stepped: true,
         fill: true,
-        pointRadius: 0
+        borderWidth: 2,
+        pointRadius: 0,
+        segment: {
+          borderColor: ctx => ctx.p1.parsed.y === 1 ? '#28a745' : '#dc3545',
+          backgroundColor: ctx => ctx.p1.parsed.y === 1
+            ? 'rgba(40,167,69,0.2)'
+            : 'rgba(220,53,69,0.2)'
+        }
       }]
     },
     options: {
@@ -133,14 +141,23 @@ function drawChart(history) {
         y: {
           ticks: {
             color: 'black',
-            callback: (value) => value === 1 ? 'Online' : 'Offline'
+            callback: value => value === 1 ? 'Online' : 'Offline'
           },
           min: 0,
           max: 1
         }
       },
       plugins: {
-        legend: { display: false }
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              const status = context.parsed.y === 1 ? 'Online' : 'Offline';
+              const time = history[context.dataIndex].time;
+              return `${status} — ${new Date(time).toLocaleString()}`;
+            }
+          }
+        }
       }
     }
   });
