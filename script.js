@@ -34,8 +34,11 @@ function addSite(url) {
   const card = document.createElement('div');
   card.className = 'card';
   
-  const siteUrl = document.createElement('div');
+  const siteUrl = document.createElement('a');
   siteUrl.className = 'site-url';
+  siteUrl.href = url;
+  siteUrl.target = '_blank';
+  siteUrl.rel = 'noopener noreferrer';
   siteUrl.textContent = url;
 
   const statusText = document.createElement('div');
@@ -100,5 +103,3 @@ const defaultSites = [
 document.addEventListener('DOMContentLoaded', () => {
   defaultSites.forEach(site => addSite(site));
 });
-
-
