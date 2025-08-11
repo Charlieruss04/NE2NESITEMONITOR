@@ -84,6 +84,14 @@ button:hover {
   background-color: #dc3545;
 }
 
+.site-url {
+  word-break: break-all;
+}
+.status-text {
+  font-weight: bold;
+  margin-left: auto;
+}
+
 .light.green + .site-url + .status-text {
   color: #28a745; /* green */
 }
@@ -91,7 +99,6 @@ button:hover {
 .light.red + .site-url + .status-text {
   color: #dc3545; /* red */
 }
-
 
 .delete-btn {
   background: none;

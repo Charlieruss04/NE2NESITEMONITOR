@@ -21,6 +21,9 @@ function addSite(url) {
   const card = document.createElement('div');
   card.className = 'card';
   
+  const light = document.createElement('div');
+  light.className = 'light';
+  
   const siteUrl = document.createElement('div');
   siteUrl.className = 'site-url';
   siteUrl.textContent = url;
@@ -39,6 +42,7 @@ function addSite(url) {
     if (index > -1) sites.splice(index, 1);
   });
 
+  card.appendChild(light);
   card.appendChild(siteUrl);
   card.appendChild(statusText);
   card.appendChild(deleteBtn);
@@ -54,34 +58,33 @@ function addSite(url) {
 
 
 
-function checkStatus(url, _, statusEl) {
+function checkStatus(url, lightEl, statusEl) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 5000);
 
   fetch(url, { method: 'HEAD', mode: 'no-cors', signal: controller.signal })
     .then(() => {
+      lightEl.classList.add('green');
       statusEl.textContent = 'Online';
-      statusEl.style.color = '#28a745'; // green
     })
     .catch(() => {
+      lightEl.classList.add('red');
       statusEl.textContent = 'Offline';
-      statusEl.style.color = '#dc3545'; // red
     })
     .finally(() => {
       clearTimeout(timeout);
     });
 }
-
 const sites = []; // store { url, lightEl, statusEl }
 
 setInterval(() => {
   sites.forEach(site => {
+    // Clear old colors before re-checking
+    site.lightEl.classList.remove('green', 'red');
     site.statusEl.textContent = 'Checking...';
-    site.statusEl.style.color = ''; // reset to default
-    checkStatus(site.url, null, site.statusEl);
+    checkStatus(site.url, site.lightEl, site.statusEl);
   });
-}, 20000);
-
+}, 20000); // 20 seconds
 
 const defaultSites = [
   'https://google.com',
