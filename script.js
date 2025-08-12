@@ -188,7 +188,7 @@ setInterval(() => {
 
 const defaultSites = [
   'https://google.com',
-  'https://example.com'
+  'https://ne2ne.com'
 ];
 
 document.addEventListener('DOMContentLoaded', () => {
