@@ -59,7 +59,7 @@ function addSite(url) {
   checkStatus(url, statusText);
 }
 
-// UPDATED checkStatus: uses backend API instead of direct fetch
+// Uses backend API for accurate status
 function checkStatus(url, statusEl) {
   statusEl.textContent = 'Checking...';
   statusEl.style.color = '';
@@ -100,56 +100,48 @@ function updateHistory(url, isOnline) {
   return history;
 }
 
+// New visually appealing blocky uptime chart
 function drawChart(history) {
   const ctx = document.getElementById('statusChart').getContext('2d');
+
   const labels = history.map(entry =>
     new Date(entry.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
   );
+
   const data = history.map(entry => entry.status);
 
   if (chart) chart.destroy();
 
   chart = new Chart(ctx, {
-    type: 'line',
+    type: 'bar',
     data: {
       labels,
       datasets: [{
         label: 'Uptime',
         data,
-        fill: true,
-        tension: 0.3,
-        borderWidth: 2,
-        pointRadius: 0,
-        borderColor: '#28a745',
-        backgroundColor: data.map(v => 
-          v === 1 
-            ? 'rgba(40,167,69,0.15)' 
-            : 'rgba(220,53,69,0.15)'
-        ),
-        segment: {
-          borderColor: ctx => ctx.p1.parsed.y === 1 ? '#28a745' : '#dc3545',
-          backgroundColor: ctx => ctx.p1.parsed.y === 1 
-            ? 'rgba(40,167,69,0.15)' 
-            : 'rgba(220,53,69,0.15)'
-        }
+        backgroundColor: data.map(v => v === 1 ? '#28a745' : '#dc3545'),
+        borderWidth: 0,
+        barPercentage: 1.0,
+        categoryPercentage: 1.0
       }]
     },
     options: {
       animation: false,
       responsive: true,
+      indexAxis: 'y',
       scales: {
         x: {
-          grid: { display: false },
-          ticks: { color: 'black', maxRotation: 0 }
+          display: false,
+          min: 0,
+          max: 1
         },
         y: {
           ticks: {
             color: 'black',
-            stepSize: 1,
-            callback: value => value === 1 ? 'Up' : 'Down'
+            autoSkip: true,
+            maxTicksLimit: 12
           },
-          min: 0,
-          max: 1
+          grid: { display: false }
         }
       },
       plugins: {
@@ -157,7 +149,7 @@ function drawChart(history) {
         tooltip: {
           callbacks: {
             label: function(context) {
-              const status = context.parsed.y === 1 ? 'Up' : 'Down';
+              const status = context.parsed.x === 1 ? 'Up' : 'Down';
               const time = history[context.dataIndex].time;
               return `${status} — ${new Date(time).toLocaleString()}`;
             }
