@@ -2,7 +2,6 @@ const addBtn = document.getElementById('addBtn');
 const urlInput = document.getElementById('urlInput');
 const sitesGrid = document.getElementById('sitesGrid');
 const sites = [];
-let chart;
 
 addBtn.addEventListener('click', () => {
   const url = urlInput.value.trim();
@@ -59,27 +58,25 @@ function addSite(url) {
   checkStatus(url, statusText);
 }
 
+// Backend-powered status check
 function checkStatus(url, statusEl) {
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 5000);
+  statusEl.textContent = 'Checking...';
+  statusEl.style.color = '';
 
-  fetch(url, { method: 'HEAD', mode: 'no-cors', signal: controller.signal })
-    .then(() => {
-      statusEl.textContent = 'Online';
-      statusEl.style.color = '#28a745';
+  fetch(`/api/check?url=${encodeURIComponent(url)}`)
+    .then(res => res.json())
+    .then(data => {
+      const isOnline = data.online;
+      statusEl.textContent = isOnline ? 'Online' : 'Offline';
+      statusEl.style.color = isOnline ? '#28a745' : '#dc3545';
+
       if (url.includes('ne2ne.com')) {
-        drawChart(updateHistory(url, true));
+        drawTimelineGrid(updateHistory(url, isOnline));
       }
     })
     .catch(() => {
-      statusEl.textContent = 'Offline';
+      statusEl.textContent = 'Error';
       statusEl.style.color = '#dc3545';
-      if (url.includes('ne2ne.com')) {
-        drawChart(updateHistory(url, false));
-      }
-    })
-    .finally(() => {
-      clearTimeout(timeout);
     });
 }
 
@@ -96,78 +93,21 @@ function updateHistory(url, isOnline) {
   return history;
 }
 
-function drawChart(history) {
-  const ctx = document.getElementById('statusChart').getContext('2d');
-  const labels = history.map(entry =>
-    new Date(entry.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-  );
-  const data = history.map(entry => entry.status);
+// GitHub-style timeline grid
+function drawTimelineGrid(history) {
+  const grid = document.getElementById('timelineGrid');
+  grid.innerHTML = '';
 
-  if (chart) chart.destroy();
-
-  chart = new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels,
-      datasets: [{
-        label: 'Uptime',
-        data,
-        fill: true,
-        tension: 0.3, // smooth curves
-        borderWidth: 2,
-        pointRadius: 0,
-        borderColor: '#28a745',
-        backgroundColor: data.map(v => 
-          v === 1 
-            ? 'rgba(40,167,69,0.15)' 
-            : 'rgba(220,53,69,0.15)'
-        ),
-        segment: {
-          borderColor: ctx => ctx.p1.parsed.y === 1 ? '#28a745' : '#dc3545',
-          backgroundColor: ctx => ctx.p1.parsed.y === 1 
-            ? 'rgba(40,167,69,0.15)' 
-            : 'rgba(220,53,69,0.15)'
-        }
-      }]
-    },
-    options: {
-      animation: false,
-      responsive: true,
-      scales: {
-        x: {
-          grid: { display: false },
-          ticks: { color: 'black', maxRotation: 0 }
-        },
-        y: {
-          ticks: {
-            color: 'black',
-            stepSize: 1,
-            callback: value => value === 1 ? 'Up' : 'Down'
-          },
-          min: 0,
-          max: 1
-        }
-      },
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          callbacks: {
-            label: function(context) {
-              const status = context.parsed.y === 1 ? 'Up' : 'Down';
-              const time = history[context.dataIndex].time;
-              return `${status} — ${new Date(time).toLocaleString()}`;
-            }
-          }
-        }
-      }
-    }
+  history.forEach(entry => {
+    const block = document.createElement('div');
+    block.className = entry.status === 1 ? 'status-up' : 'status-down';
+    block.title = `${entry.status === 1 ? 'Up' : 'Down'} — ${new Date(entry.time).toLocaleString()}`;
+    grid.appendChild(block);
   });
 }
 
 setInterval(() => {
   sites.forEach(site => {
-    site.statusEl.textContent = 'Checking...';
-    site.statusEl.style.color = '';
     checkStatus(site.url, site.statusEl);
   });
 }, 20000);
@@ -182,6 +122,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const existingHistory = JSON.parse(localStorage.getItem('history_https://ne2ne.com')) || [];
   if (existingHistory.length > 0) {
-    drawChart(existingHistory);
+    drawTimelineGrid(existingHistory);
   }
 });
