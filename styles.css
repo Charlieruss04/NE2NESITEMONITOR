@@ -1,6 +1,6 @@
 body {
   font-family: Arial, sans-serif;
-  background: #14229A; /* Deep blue from logo */
+  background: #14229A;
   margin: 0;
   padding: 0;
   color: white;
@@ -67,17 +67,15 @@ button:hover {
   border-radius: 10px;
   padding: 20px;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 12px;
   box-shadow: 0 3px 8px rgba(0,0,0,0.25);
 }
 
 .site-url {
-  flex: 1;
-  word-break: break-all;
-  text-align: left;
   font-size: 1.1em;
+  margin-bottom: 10px;
 }
 
 .site-url a {
@@ -107,22 +105,10 @@ button:hover {
   transform: scale(1.2);
 }
 
-/* Chart section styling */
-.chart-container {
-  max-width: 900px;
-  margin: 50px auto 30px;
-  text-align: center;
-}
-
-.chart-container h2 {
-  margin-bottom: 15px;
-  color: white;
-}
-
-/* Updated chart styling to match clean look */
-#statusChart {
+/* Per-site chart styling */
+.site-chart {
   background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-  height: 300px; /* taller for better visibility */
+  border-radius: 6px;
+  box-shadow: 0 1px 5px rgba(0,0,0,0.15);
+  margin-top: 10px;
 }
