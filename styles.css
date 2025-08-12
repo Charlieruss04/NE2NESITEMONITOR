@@ -67,7 +67,7 @@ button:hover {
   border-radius: 10px;
   padding: 20px;
   display: flex;
-  flex-direction: column; /* Stack content vertically */
+  flex-direction: column;
   align-items: stretch;
   gap: 12px;
   box-shadow: 0 3px 8px rgba(0,0,0,0.25);
@@ -86,6 +86,12 @@ button:hover {
   text-decoration: underline;
 }
 
+.status-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
 .status-text {
   font-weight: bold;
   font-size: 1.1em;
@@ -96,7 +102,6 @@ button:hover {
   border: none;
   font-size: 22px;
   cursor: pointer;
-  align-self: flex-end; /* Align trash can to right */
 }
 
 .delete-btn:hover {

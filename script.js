@@ -31,18 +31,18 @@ function addSite(url) {
   const card = document.createElement('div');
   card.className = 'card';
 
+  // URL at the top
   const siteUrl = document.createElement('div');
   siteUrl.className = 'site-url';
   siteUrl.innerHTML = `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`;
 
+  // Status + Delete in same row
+  const statusRow = document.createElement('div');
+  statusRow.className = 'status-row';
+
   const statusText = document.createElement('div');
   statusText.className = 'status-text';
   statusText.textContent = 'Checking...';
-
-  const chartCanvas = document.createElement('canvas');
-  chartCanvas.className = 'site-chart';
-  chartCanvas.height = 100;
-  chartCanvas.id = `chart-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 
   const deleteBtn = document.createElement('button');
   deleteBtn.className = 'delete-btn';
@@ -54,11 +54,19 @@ function addSite(url) {
     localStorage.removeItem(`history_${url}`);
   });
 
-  // Append elements in vertical order
+  statusRow.appendChild(statusText);
+  statusRow.appendChild(deleteBtn);
+
+  // Chart below status row
+  const chartCanvas = document.createElement('canvas');
+  chartCanvas.className = 'site-chart';
+  chartCanvas.height = 100;
+  chartCanvas.id = `chart-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+
+  // Append in order
   card.appendChild(siteUrl);
-  card.appendChild(statusText);
+  card.appendChild(statusRow);
   card.appendChild(chartCanvas);
-  card.appendChild(deleteBtn);
 
   sitesGrid.appendChild(card);
 
@@ -131,5 +139,60 @@ function drawChart(siteData, history) {
         tension: 0.3,
         borderWidth: 2,
         pointRadius: 0,
-        borderColor: c
+        borderColor: c => c.dataset.data.map(v => v === 1 ? '#28a745' : '#dc3545'),
+        segment: {
+          borderColor: c => c.p1.parsed.y === 1 ? '#28a745' : '#dc3545'
+        }
+      }]
+    },
+    options: {
+      animation: false,
+      responsive: true,
+      scales: {
+        x: {
+          grid: { display: false },
+          ticks: { color: 'black', maxRotation: 0 }
+        },
+        y: {
+          ticks: {
+            color: 'black',
+            stepSize: 1,
+            callback: value => value === 1 ? 'Up' : 'Down'
+          },
+          min: 0,
+          max: 1
+        }
+      },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: function (context) {
+              const status = context.parsed.y === 1 ? 'Up' : 'Down';
+              const time = history[context.dataIndex].time;
+              return `${status} — ${new Date(time).toLocaleString()}`;
+            }
+          }
+        }
+      }
+    }
+  });
+}
 
+// Refresh every 20 seconds
+setInterval(() => {
+  sites.forEach(site => {
+    site.statusEl.textContent = 'Checking...';
+    site.statusEl.style.color = '';
+    checkStatus(site.url, site.statusEl, site);
+  });
+}, 20000);
+
+const defaultSites = [
+  'https://google.com',
+  'https://example.com'
+];
+
+document.addEventListener('DOMContentLoaded', () => {
+  defaultSites.forEach(site => addSite(site));
+});
