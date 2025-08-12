@@ -119,16 +119,10 @@ button:hover {
   color: white;
 }
 
+/* Updated chart styling to match clean look */
 #statusChart {
   background: white;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-  height: 300px;
-  padding: 10px;
+  height: 300px; /* taller for better visibility */
 }
-
-/* Make the bar chart blocks look tighter */
-#statusChart canvas {
-  border-radius: 4px;
-}
-
