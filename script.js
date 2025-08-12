@@ -31,6 +31,11 @@ function addSite(url) {
   const card = document.createElement('div');
   card.className = 'card';
 
+  const contentWrapper = document.createElement('div');
+  contentWrapper.style.flex = '1';
+  contentWrapper.style.display = 'flex';
+  contentWrapper.style.flexDirection = 'column';
+
   const siteUrl = document.createElement('div');
   siteUrl.className = 'site-url';
   siteUrl.innerHTML = `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`;
@@ -41,8 +46,8 @@ function addSite(url) {
 
   const chartCanvas = document.createElement('canvas');
   chartCanvas.className = 'site-chart';
-  chartCanvas.height = 100;
-  chartCanvas.id = `chart-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+  chartCanvas.height = 100; // small chart height
+  chartCanvas.id = `chart-${Date.now()}-${Math.floor(Math.random()*1000)}`;
 
   const deleteBtn = document.createElement('button');
   deleteBtn.className = 'delete-btn';
@@ -54,10 +59,11 @@ function addSite(url) {
     localStorage.removeItem(`history_${url}`);
   });
 
-  // Append elements in vertical order
-  card.appendChild(siteUrl);
+  contentWrapper.appendChild(siteUrl);
+  contentWrapper.appendChild(chartCanvas);
+
+  card.appendChild(contentWrapper);
   card.appendChild(statusText);
-  card.appendChild(chartCanvas);
   card.appendChild(deleteBtn);
 
   sitesGrid.appendChild(card);
@@ -70,7 +76,7 @@ function addSite(url) {
   };
   sites.push(siteData);
 
-  // Load existing history if available
+  // Draw initial chart if we have history
   const existingHistory = JSON.parse(localStorage.getItem(`history_${url}`)) || [];
   if (existingHistory.length > 0) {
     drawChart(siteData, existingHistory);
@@ -131,5 +137,60 @@ function drawChart(siteData, history) {
         tension: 0.3,
         borderWidth: 2,
         pointRadius: 0,
-        borderColor: c
+        borderColor: ctx => ctx.dataset.data.map(v => v === 1 ? '#28a745' : '#dc3545'),
+        segment: {
+          borderColor: ctx => ctx.p1.parsed.y === 1 ? '#28a745' : '#dc3545'
+        }
+      }]
+    },
+    options: {
+      animation: false,
+      responsive: true,
+      scales: {
+        x: {
+          grid: { display: false },
+          ticks: { color: 'black', maxRotation: 0 }
+        },
+        y: {
+          ticks: {
+            color: 'black',
+            stepSize: 1,
+            callback: value => value === 1 ? 'Up' : 'Down'
+          },
+          min: 0,
+          max: 1
+        }
+      },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: function(context) {
+              const status = context.parsed.y === 1 ? 'Up' : 'Down';
+              const time = history[context.dataIndex].time;
+              return `${status} — ${new Date(time).toLocaleString()}`;
+            }
+          }
+        }
+      }
+    }
+  });
+}
 
+// Refresh every 20 seconds
+setInterval(() => {
+  sites.forEach(site => {
+    site.statusEl.textContent = 'Checking...';
+    site.statusEl.style.color = '';
+    checkStatus(site.url, site.statusEl, site);
+  });
+}, 20000);
+
+const defaultSites = [
+  'https://google.com',
+  'https://example.com'
+];
+
+document.addEventListener('DOMContentLoaded', () => {
+  defaultSites.forEach(site => addSite(site));
+});
