@@ -107,7 +107,7 @@ button:hover {
   transform: scale(1.2);
 }
 
-/* Chart section styling */
+/* Chart/timeline section styling */
 .chart-container {
   max-width: 900px;
   margin: 50px auto 30px;
@@ -119,10 +119,31 @@ button:hover {
   color: white;
 }
 
-/* Updated chart styling to match clean look */
-#statusChart {
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-  height: 300px; /* taller for better visibility */
+/* Timeline grid styling */
+.timeline-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 12px);
+  gap: 3px;
+  justify-content: center;
+  padding: 10px;
+}
+
+.timeline-grid div {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  transition: transform 0.15s ease;
+}
+
+.status-up {
+  background-color: #28a745;
+}
+
+.status-down {
+  background-color: #dc3545;
+}
+
+.timeline-grid div:hover {
+  transform: scale(1.3);
+  outline: 1px solid #000;
 }
