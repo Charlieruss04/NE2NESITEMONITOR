@@ -59,31 +59,27 @@ function addSite(url) {
   checkStatus(url, statusText);
 }
 
-// UPDATED checkStatus: uses backend API instead of direct fetch
 function checkStatus(url, statusEl) {
-  statusEl.textContent = 'Checking...';
-  statusEl.style.color = '';
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 5000);
 
-  fetch(`/api/check?url=${encodeURIComponent(url)}`)
-    .then(res => res.json())
-    .then(data => {
-      if (data.online) {
-        statusEl.textContent = 'Online';
-        statusEl.style.color = '#28a745';
-        if (url.includes('ne2ne.com')) {
-          drawChart(updateHistory(url, true));
-        }
-      } else {
-        statusEl.textContent = 'Offline';
-        statusEl.style.color = '#dc3545';
-        if (url.includes('ne2ne.com')) {
-          drawChart(updateHistory(url, false));
-        }
+  fetch(url, { method: 'HEAD', mode: 'no-cors', signal: controller.signal })
+    .then(() => {
+      statusEl.textContent = 'Online';
+      statusEl.style.color = '#28a745';
+      if (url.includes('ne2ne.com')) {
+        drawChart(updateHistory(url, true));
       }
     })
     .catch(() => {
-      statusEl.textContent = 'Error';
+      statusEl.textContent = 'Offline';
       statusEl.style.color = '#dc3545';
+      if (url.includes('ne2ne.com')) {
+        drawChart(updateHistory(url, false));
+      }
+    })
+    .finally(() => {
+      clearTimeout(timeout);
     });
 }
 
@@ -117,7 +113,7 @@ function drawChart(history) {
         label: 'Uptime',
         data,
         fill: true,
-        tension: 0.3,
+        tension: 0.3, // smooth curves
         borderWidth: 2,
         pointRadius: 0,
         borderColor: '#28a745',
@@ -170,6 +166,8 @@ function drawChart(history) {
 
 setInterval(() => {
   sites.forEach(site => {
+    site.statusEl.textContent = 'Checking...';
+    site.statusEl.style.color = '';
     checkStatus(site.url, site.statusEl);
   });
 }, 20000);
