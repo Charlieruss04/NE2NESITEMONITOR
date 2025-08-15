@@ -1,7 +1,62 @@
+// Alert banner logic
+function showAlert(message) {
+  let alertDiv = document.getElementById('offlineAlert');
+  if (!alertDiv) {
+    alertDiv = document.createElement('div');
+    alertDiv.id = 'offlineAlert';
+    alertDiv.style.position = 'fixed';
+    alertDiv.style.top = '0';
+    alertDiv.style.left = '0';
+    alertDiv.style.width = '100%';
+    alertDiv.style.background = '#dc3545';
+    alertDiv.style.color = 'white';
+    alertDiv.style.textAlign = 'center';
+    alertDiv.style.padding = '16px 0';
+    alertDiv.style.fontSize = '1.2em';
+    alertDiv.style.zIndex = '9999';
+    document.body.appendChild(alertDiv);
+  }
+  alertDiv.textContent = message;
+  alertDiv.style.display = 'block';
+}
+
+function hideAlert() {
+  const alertDiv = document.getElementById('offlineAlert');
+  if (alertDiv) {
+    alertDiv.style.display = 'none';
+  }
+}
+
+function checkAllSitesStatus() {
+  // Find all offline sites
+  const offlineSites = sites.filter(site => site.statusEl.textContent === 'Offline');
+  if (offlineSites.length > 0) {
+    const offlineList = offlineSites.map(site => site.url.replace(/^https?:\/\//, '')).join(', ');
+    const msg = offlineSites.length === 1
+      ? `ALERT: ${offlineList} is OFFLINE!`
+      : `ALERT: The following sites are OFFLINE: ${offlineList}`;
+    showAlert(msg);
+  } else {
+    hideAlert();
+  }
+}
+// Clear all history button logic
+document.addEventListener('DOMContentLoaded', () => {
+  const clearBtn = document.getElementById('clearHistoryBtn');
+  if (clearBtn) {
+    clearBtn.addEventListener('click', () => {
+      Object.keys(localStorage).forEach(k => {
+        if (k.startsWith('history_')) localStorage.removeItem(k);
+      });
+    });
+  }
+});
 const addBtn = document.getElementById('addBtn');
 const urlInput = document.getElementById('urlInput');
 const sitesGrid = document.getElementById('sitesGrid');
+
 const sites = [];
+
 
 addBtn.addEventListener('click', () => {
   const url = urlInput.value.trim();
@@ -27,6 +82,7 @@ function normalizeUrl(url) {
   return url;
 }
 
+
 function addSite(url) {
   const card = document.createElement('div');
   card.className = 'card';
@@ -44,11 +100,6 @@ function addSite(url) {
   statusText.className = 'status-text';
   statusText.textContent = 'Checking...';
 
-  const chartCanvas = document.createElement('canvas');
-  chartCanvas.className = 'site-chart';
-  chartCanvas.height = 100; // small chart height
-  chartCanvas.id = `chart-${Date.now()}-${Math.floor(Math.random()*1000)}`;
-
   const deleteBtn = document.createElement('button');
   deleteBtn.className = 'delete-btn';
   deleteBtn.innerHTML = '🗑️';
@@ -60,27 +111,18 @@ function addSite(url) {
   });
 
   contentWrapper.appendChild(siteUrl);
-  contentWrapper.appendChild(chartCanvas);
-
   card.appendChild(contentWrapper);
   card.appendChild(statusText);
   card.appendChild(deleteBtn);
-
   sitesGrid.appendChild(card);
 
   const siteData = {
     url,
-    statusEl: statusText,
-    chartEl: chartCanvas,
-    chart: null
+    statusEl: statusText
   };
   sites.push(siteData);
 
-  // Draw initial chart if we have history
-  const existingHistory = JSON.parse(localStorage.getItem(`history_${url}`)) || [];
-  if (existingHistory.length > 0) {
-    drawChart(siteData, existingHistory);
-  }
+  // Add dataset to main chart
 
   checkStatus(url, statusText, siteData);
 }
@@ -93,12 +135,14 @@ function checkStatus(url, statusEl, siteData) {
     .then(() => {
       statusEl.textContent = 'Online';
       statusEl.style.color = '#28a745';
-      drawChart(siteData, updateHistory(url, true));
+      updateHistory(url, true);
+      checkAllSitesStatus();
     })
     .catch(() => {
       statusEl.textContent = 'Offline';
       statusEl.style.color = '#dc3545';
-      drawChart(siteData, updateHistory(url, false));
+      updateHistory(url, false);
+      checkAllSitesStatus();
     })
     .finally(() => {
       clearTimeout(timeout);
@@ -118,64 +162,9 @@ function updateHistory(url, isOnline) {
   return history;
 }
 
-function drawChart(siteData, history) {
-  const ctx = siteData.chartEl.getContext('2d');
-  const labels = history.map(entry =>
-    new Date(entry.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-  );
-  const data = history.map(entry => entry.status);
 
-  if (siteData.chart) siteData.chart.destroy();
+// Main chart logic
 
-  siteData.chart = new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels,
-      datasets: [{
-        data,
-        fill: false,
-        tension: 0.3,
-        borderWidth: 2,
-        pointRadius: 0,
-        borderColor: ctx => ctx.dataset.data.map(v => v === 1 ? '#28a745' : '#dc3545'),
-        segment: {
-          borderColor: ctx => ctx.p1.parsed.y === 1 ? '#28a745' : '#dc3545'
-        }
-      }]
-    },
-    options: {
-      animation: false,
-      responsive: true,
-      scales: {
-        x: {
-          grid: { display: false },
-          ticks: { color: 'black', maxRotation: 0 }
-        },
-        y: {
-          ticks: {
-            color: 'black',
-            stepSize: 1,
-            callback: value => value === 1 ? 'Up' : 'Down'
-          },
-          min: 0,
-          max: 1
-        }
-      },
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          callbacks: {
-            label: function(context) {
-              const status = context.parsed.y === 1 ? 'Up' : 'Down';
-              const time = history[context.dataIndex].time;
-              return `${status} — ${new Date(time).toLocaleString()}`;
-            }
-          }
-        }
-      }
-    }
-  });
-}
 
 // Refresh every 20 seconds
 setInterval(() => {
@@ -184,6 +173,8 @@ setInterval(() => {
     site.statusEl.style.color = '';
     checkStatus(site.url, site.statusEl, site);
   });
+  // After all checks, update alert
+  setTimeout(checkAllSitesStatus, 1000);
 }, 20000);
 
 const defaultSites = [
@@ -193,4 +184,5 @@ const defaultSites = [
 
 document.addEventListener('DOMContentLoaded', () => {
   defaultSites.forEach(site => addSite(site));
+  setTimeout(checkAllSitesStatus, 1000);
 });
